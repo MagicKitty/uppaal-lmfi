@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>// déclarations globales à tout le système
+// canal de communication pour l'envoi de messages
+chan MESSAGE[3];
+
+// variable permettant de connaître la destination d'un message
+int destination;
+
+// définition d'un paquet/message
+bool FIN;
+bool ACK;
+int no_seq;
+int no_ack;
+
+// variable permettant de savoir quel message envoyer et avec quels numéros de séquence et d'acquittement
+int phase = 0;</declaration><template><name x="8" y="8">Machines</name><parameter>const int machineA, const int machineB, const int canal</parameter><declaration>// déclarations locales à l'automate Machines
+void envoie(bool fin, bool ack) {
+  if (phase == 0) {
+    if (fin == true and ack == false) {
+      no_seq := 0;
+    }
+  }
+  if(phase == 1) {
+    if (fin == true and ack == false) {
+      no_seq := 1;
+    }
+  }
+  if (fin == false and ack == true) {
+    no_ack := no_seq + 1;
+  }
+}
+
+// horloge des machines permettant le renvoi du message de fin par la machine B
+clock delay;</declaration><location id="id0" x="-2160" y="-1904"><name x="-2192" y="-1944">Time_Wait</name><committed/></location><location id="id1" x="-2160" y="-1744"><name x="-2184" y="-1720">Closed</name></location><location id="id2" x="-2448" y="-1904"><name x="-2480" y="-1880">Fin_Wait_2</name></location><location id="id3" x="-2448" y="-1744"><name x="-2472" y="-1720">Last_Ack</name></location><location id="id4" x="-2736" y="-1744"><name x="-2752" y="-1720">Delay</name></location><location id="id5" x="-2448" y="-2064"></location><location id="id6" x="-2736" y="-1936"><name x="-2776" y="-1976">Close_Wait</name></location><location id="id7" x="-2736" y="-2064"><name x="-2768" y="-2104">Fin_Wait_1</name></location><location id="id8" x="-3056" y="-2064"><name x="-3088" y="-2104">Established</name></location><init ref="id8"/><transition><source ref="id1"/><target ref="id1"/><nail x="-2232" y="-1784"/><nail x="-2200" y="-1808"/></transition><transition><source ref="id3"/><target ref="id1"/><label kind="guard" x="-2368" y="-1720">FIN == false and
+ACK == true</label><label kind="synchronisation" x="-2368" y="-1736">MESSAGE[machineA]?</label></transition><transition><source ref="id0"/><target ref="id1"/></transition><transition><source ref="id2"/><target ref="id0"/><label kind="synchronisation" x="-2352" y="-1895">MESSAGE[canal]!</label><label kind="assignment" x="-2352" y="-1880">destination := machineB,
+FIN := false,
+ACK := true,
+envoie(FIN,ACK)</label></transition><transition><source ref="id5"/><target ref="id2"/><label kind="guard" x="-2440" y="-2000">FIN == true and
+ACK == false</label><label kind="synchronisation" x="-2440" y="-2016">MESSAGE[machineB]?</label></transition><transition><source ref="id4"/><target ref="id3"/><label kind="guard" x="-2656" y="-1720">delay &gt;= 10</label><label kind="synchronisation" x="-2656" y="-1736">MESSAGE[canal]!</label><label kind="assignment" x="-2656" y="-1704">destination := machineA,
+FIN := true,
+ACK := false,
+phase := 1,
+envoie(FIN,ACK)</label></transition><transition><source ref="id6"/><target ref="id4"/><label kind="synchronisation" x="-2728" y="-1888">MESSAGE[canal]!</label><label kind="assignment" x="-2728" y="-1872">destination := machineA,
+FIN := false,
+ACK := true,
+envoie(FIN,ACK)</label></transition><transition><source ref="id7"/><target ref="id5"/><label kind="guard" x="-2640" y="-2104">FIN == false and
+ACK == true</label><label kind="synchronisation" x="-2640" y="-2120">MESSAGE[machineB]?</label></transition><transition><source ref="id8"/><target ref="id6"/><label kind="guard" x="-2976" y="-1912">FIN == true and
+ACK == false</label><label kind="synchronisation" x="-2976" y="-1928">MESSAGE[machineA]?</label><nail x="-3056" y="-1936"/></transition><transition><source ref="id8"/><target ref="id7"/><label kind="synchronisation" x="-2968" y="-2152">MESSAGE[canal]!</label><label kind="assignment" x="-2968" y="-2136">destination := machineB,
+FIN := true,
+ACK := false,
+envoie(FIN,ACK)</label></transition></template><template><name>Reseaux</name><parameter>const int canal</parameter><declaration>// déclarations locales à l'automate Reseaux
+// machine destination pour le message
+int machine_destination;</declaration><location id="id9" x="-472" y="-304"></location><location id="id10" x="-824" y="-304"><name x="-840" y="-344">Debut</name></location><init ref="id10"/><transition><source ref="id9"/><target ref="id10"/><label kind="synchronisation" x="-752" y="-184">MESSAGE[machine_destination]!</label><nail x="-472" y="-192"/><nail x="-824" y="-192"/></transition><transition><source ref="id10"/><target ref="id9"/><label kind="synchronisation" x="-752" y="-352">MESSAGE[canal]?</label><label kind="assignment" x="-752" y="-336">machine_destination := destination</label></transition></template><system>// déclaration des réseaux, ce qui revient à déclarer le nombre de messages en parallèle
+Reseau1 = Reseaux(0);
+// déclaration des machines communicantes
+MachineA = Machines(1,2,0);
+MachineB = Machines(2,1,0);
+
+// définition du système d'automates
+system Reseau1, MachineA, MachineB;</system></nta>
