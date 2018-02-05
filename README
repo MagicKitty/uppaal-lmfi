@@ -1,21 +1,6 @@
-http://sebsauvage.net/comprendre/tcpip/
-https://fr.wikipedia.org/wiki/Transmission_Control_Protocol
-http://people.cs.aau.dk/~adavid/publications/21-tutorial.pdf
-https://www.it.uu.se/research/group/darts/uppaal/small_tutorial.pdf
+# TCP avec UPPAAL
+Simulation du protocol TCP avec UPPAAL.
 
-
-Version 1
-Choix d'implémentation :
-TTL clock à valeur arbitraire 100
-TTL remis à zéro à chaque envoi de message
-Le serveur ne peut pas ralentir ou empêcher une transaction
-Pas de ralentissement du réseau
-Pas de ralentissement du client
-Pas de ralentissement du voleur
-Le voleur ne peut pas voler plus d'1 message
-
-Notes à part : 3 handshake
-Pas évident de trouver qu'il fallait réunir les deux machines en un seul automate, mais obligé si on veut qu'il n'y ait pas de différence entre les machines qui débutent la transaction.
-La vision des deux machines en une seule est déroutante au début, mais simplifie énormément la vision du système par la suite.
-Définition des adresses des deux machines pour répondre à la définition du protocol TCP
-Découvert qu'une fois un message envoyé, il ne pouvait pas être renvoyé
+## Projet par :
+Nicolas Blin
+Driss Amrani

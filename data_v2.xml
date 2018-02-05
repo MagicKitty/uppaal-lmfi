@@ -23,7 +23,10 @@ const int n = 10;
 // time to live
 const int TTL = 100;
 
-bool taken = false;</declaration><template><name x="8" y="8">Machines</name><parameter>const int machineA, const int machineB, const int canal</parameter><declaration>// déclarations locales à l'automate Machines
+bool taken = false;
+
+// nombre de messages en simultané
+const int nbr_reseaux = 3;</declaration><template><name x="8" y="8">Machines</name><parameter>const int machineA, const int machineB, const int canal</parameter><declaration>// déclarations locales à l'automate Machines
 void envoie(bool data, bool ack) {
   if (data == true and ack == false) {
     no_seq := 0;
@@ -34,31 +37,41 @@ void envoie(bool data, bool ack) {
     no_seq := no_ack;
     no_ack := tmpSwap + n;
   }
-}</declaration><location id="id0" x="-5648" y="-14352"><name x="-5688" y="-14392">Data_Send_2</name></location><location id="id1" x="-5744" y="-14064"><name x="-5760" y="-14104">Data_Rcvd_2</name></location><location id="id2" x="-6064" y="-14064"><name x="-6080" y="-14104">Data_Rcvd_1</name><committed/></location><location id="id3" x="-5968" y="-14352"><name x="-6000" y="-14392">Data_Send</name></location><location id="id4" x="-6352" y="-14064"><name x="-6424" y="-14072">Serveur</name></location><location id="id5" x="-6352" y="-14352"><name x="-6368" y="-14392">Client</name><label kind="invariant" x="-6368" y="-14424">taken == false and
-c &lt; 1</label></location><location id="id6" x="-6512" y="-14352"><name x="-6544" y="-14392">Established</name><committed/></location><init ref="id6"/><transition><source ref="id0"/><target ref="id0"/><label kind="guard" x="-5608" y="-14288">c &gt;= TTL</label><label kind="synchronisation" x="-5608" y="-14304">MESSAGE[canal]!</label><label kind="assignment" x="-5608" y="-14272">destination := machineB,
-DATA := true,
-ACK := false,
-c := 0,
-envoie(DATA,ACK)</label><nail x="-5456" y="-14352"/><nail x="-5456" y="-14192"/><nail x="-5648" y="-14192"/></transition><transition><source ref="id0"/><target ref="id5"/><label kind="guard" x="-5912" y="-14264">DATA == false and
-ACK == true</label><label kind="synchronisation" x="-5912" y="-14280">MESSAGE[machineB]?</label><label kind="assignment" x="-5912" y="-14232">taken := false,
-c := 0</label><nail x="-5808" y="-14192"/><nail x="-6224" y="-14192"/></transition><transition><source ref="id3"/><target ref="id0"/><label kind="guard" x="-5856" y="-14456">c &gt;= TTL</label><label kind="synchronisation" x="-5856" y="-14472">MESSAGE[canal]!</label><label kind="assignment" x="-5856" y="-14440">destination := machineB,
-DATA := true,
-ACK := false,
-c := 0,
-envoie(DATA,ACK)</label></transition><transition><source ref="id1"/><target ref="id2"/><label kind="guard" x="-5976" y="-14016">DATA == true and
-ACK == false</label><label kind="synchronisation" x="-5976" y="-14032">MESSAGE[machineA]?</label><nail x="-5776" y="-14032"/><nail x="-6032" y="-14032"/></transition><transition><source ref="id2"/><target ref="id1"/><label kind="synchronisation" x="-5936" y="-14152">MESSAGE[canal]!</label><label kind="assignment" x="-5936" y="-14136">destination := machineA,
+}
+
+int nb_mess;
+int nb_mess_s = nbr_reseaux;
+int compteur;
+int compteur_s = 0;</declaration><location id="id0" x="-6352" y="-13968"></location><location id="id1" x="-5648" y="-14384"><name x="-5688" y="-14368">Data_Send_2</name></location><location id="id2" x="-5744" y="-14096"><name x="-5760" y="-14136">Data_Rcvd_2</name></location><location id="id3" x="-6064" y="-14096"><name x="-6136" y="-14136">Data_Rcvd_1</name></location><location id="id4" x="-6000" y="-14384"><name x="-6032" y="-14368">Data_Send</name></location><location id="id5" x="-6352" y="-14096"><name x="-6424" y="-14104">Serveur</name></location><location id="id6" x="-6352" y="-14384"><name x="-6368" y="-14424">Client</name><label kind="invariant" x="-6368" y="-14464">taken == false and
+c &lt; 1</label></location><location id="id7" x="-6512" y="-14384"><name x="-6544" y="-14424">Established</name><committed/></location><init ref="id7"/><transition><source ref="id0"/><target ref="id3"/><nail x="-6256" y="-13968"/></transition><transition><source ref="id5"/><target ref="id0"/><label kind="guard" x="-6416" y="-14048">c &gt;= TTL</label><label kind="assignment" x="-6416" y="-14032">c := 0</label></transition><transition><source ref="id3"/><target ref="id5"/><label kind="guard" x="-6240" y="-14176">c &gt;= TTL</label><nail x="-6232" y="-14152"/></transition><transition><source ref="id1"/><target ref="id4"/><label kind="guard" x="-5872" y="-14352">c &gt;= TTL and
+DATA == false and
+ACK == true and
+compteur &lt; nbr_reseaux</label><label kind="assignment" x="-5872" y="-14296">nb_mess := nbr_reseaux,
+compteur := 0</label><nail x="-5744" y="-14352"/><nail x="-5904" y="-14352"/></transition><transition><source ref="id2"/><target ref="id3"/><label kind="guard" x="-5984" y="-14080">compteur_s == nbr_reseaux</label><label kind="assignment" x="-5984" y="-14096">nb_mess_s := nbr_reseaux</label></transition><transition><source ref="id2"/><target ref="id2"/><label kind="guard" x="-5800" y="-13936">compteur_s &lt; nbr_reseaux</label><label kind="synchronisation" x="-5800" y="-14024">MESSAGE[canal]!</label><label kind="assignment" x="-5800" y="-14008">destination := machineA,
+compteur_s := compteur_s + 1,
 DATA := false,
 ACK := true,
-envoie(DATA,ACK)</label></transition><transition><source ref="id4"/><target ref="id2"/><label kind="synchronisation" x="-6272" y="-14088">MESSAGE[machineA]?</label></transition><transition><source ref="id3"/><target ref="id5"/><label kind="guard" x="-6184" y="-14272">c &lt; TTL and
+envoie(DATA,ACK)</label><nail x="-5808" y="-14032"/><nail x="-5680" y="-14032"/></transition><transition><source ref="id3"/><target ref="id3"/><label kind="guard" x="-6136" y="-13976">DATA == true and
+ACK == false</label><label kind="synchronisation" x="-6136" y="-14024">MESSAGE[machineA]?</label><label kind="assignment" x="-6136" y="-14008">nb_mess_s := nb_mess_s - 1,
+compteur_s := compteur_s + 1</label><nail x="-6128" y="-14032"/><nail x="-6000" y="-14032"/></transition><transition><source ref="id1"/><target ref="id1"/><label kind="guard" x="-5712" y="-14536">c &lt; TTL and
 DATA == false and
-ACK == true</label><label kind="synchronisation" x="-6184" y="-14320">MESSAGE[machineB]?</label><label kind="assignment" x="-6184" y="-14304">c := 0,
-taken := false</label><nail x="-6000" y="-14320"/><nail x="-6288" y="-14320"/></transition><transition><source ref="id5"/><target ref="id3"/><label kind="synchronisation" x="-6200" y="-14456">MESSAGE[canal]!</label><label kind="assignment" x="-6200" y="-14440">destination := machineB,
+ACK == true</label><label kind="synchronisation" x="-5712" y="-14552">MESSAGE[machineB]?</label><label kind="assignment" x="-5712" y="-14488">compteur := compteur + 1,
+c := 0</label><nail x="-5712" y="-14448"/><nail x="-5584" y="-14448"/></transition><transition><source ref="id4"/><target ref="id4"/><label kind="guard" x="-6048" y="-14592">nb_mess &gt; 0</label><label kind="synchronisation" x="-6048" y="-14576">MESSAGE[canal]!</label><label kind="assignment" x="-6048" y="-14560">nb_mess := nb_mess - 1,
+destination := machineB,
+compteur := 0,
 DATA := true,
 ACK := false,
-taken := true,
-envoie(DATA,ACK)</label></transition><transition><source ref="id4"/><target ref="id5"/><label kind="assignment" x="-6312" y="-14192">c := 0</label><nail x="-6320" y="-14096"/><nail x="-6320" y="-14256"/></transition><transition><source ref="id5"/><target ref="id4"/><nail x="-6384" y="-14256"/><nail x="-6384" y="-14096"/></transition><transition><source ref="id6"/><target ref="id5"/><label kind="assignment" x="-6448" y="-14376">c := 0</label></transition></template><template><name>Reseaux</name><parameter>const int canal</parameter><declaration>// déclarations locales à l'automate Reseaux
+c := 0,
+envoie(DATA,ACK)</label><nail x="-6064" y="-14448"/><nail x="-5936" y="-14448"/></transition><transition><source ref="id1"/><target ref="id6"/><label kind="guard" x="-6160" y="-14312">DATA == false and
+ACK == true and
+compteur == nbr_reseaux</label><label kind="assignment" x="-6160" y="-14264">taken := false,
+c := 0</label><nail x="-5552" y="-14384"/><nail x="-5552" y="-14224"/><nail x="-6192" y="-14224"/></transition><transition><source ref="id4"/><target ref="id1"/><label kind="guard" x="-5856" y="-14432">nb_mess == 0</label><label kind="assignment" x="-5856" y="-14416">compteur := 0</label></transition><transition><source ref="id3"/><target ref="id2"/><label kind="guard" x="-5952" y="-14168">compteur_s == nbr_reseaux and
+nb_mess_s == 0</label><label kind="assignment" x="-5952" y="-14184">compteur_s := 0</label><nail x="-6032" y="-14128"/><nail x="-5776" y="-14128"/></transition><transition><source ref="id5"/><target ref="id3"/><label kind="guard" x="-6320" y="-14056">c &lt; TTL</label><label kind="assignment" x="-6320" y="-14088">nb_mess_s := nbr_reseaux,
+compteur_s := 0</label></transition><transition><source ref="id6"/><target ref="id4"/><label kind="assignment" x="-6224" y="-14448">taken := true,
+nb_mess := nbr_reseaux,
+compteur := 0</label></transition><transition><source ref="id5"/><target ref="id6"/><label kind="assignment" x="-6312" y="-14240">c := 0</label><nail x="-6320" y="-14128"/><nail x="-6320" y="-14320"/></transition><transition><source ref="id6"/><target ref="id5"/><nail x="-6384" y="-14320"/><nail x="-6384" y="-14128"/></transition><transition><source ref="id7"/><target ref="id6"/><label kind="assignment" x="-6448" y="-14408">c := 0</label></transition></template><template><name>Reseaux</name><parameter>const int canal</parameter><declaration>// déclarations locales à l'automate Reseaux
 // machine destination pour le message
-int machine_destination;</declaration><location id="id7" x="-1072" y="-472"><name x="-1088" y="-456">Lenteur</name><label kind="invariant" x="-1088" y="-440">c &lt; 10</label></location><location id="id8" x="-912" y="-280"></location><location id="id9" x="-1232" y="-280"><name x="-1288" y="-288">Debut</name></location><init ref="id9"/><transition><source ref="id7"/><target ref="id9"/><label kind="synchronisation" x="-1224" y="-400">MESSAGE[machine_destination]!</label><nail x="-1232" y="-472"/></transition><transition><source ref="id8"/><target ref="id7"/><nail x="-912" y="-472"/></transition><transition><source ref="id8"/><target ref="id9"/><label kind="synchronisation" x="-1168" y="-208">MESSAGE[machine_destination]!</label><nail x="-912" y="-216"/><nail x="-1232" y="-216"/></transition><transition><source ref="id9"/><target ref="id8"/><label kind="synchronisation" x="-1168" y="-328">MESSAGE[canal]?</label><label kind="assignment" x="-1168" y="-312">machine_destination := destination</label></transition></template><template><name>Voleurs</name><parameter>const int canal</parameter><location id="id10" x="-496" y="-144"><name x="-512" y="-128">Voleur</name></location><init ref="id10"/><transition><source ref="id10"/><target ref="id10"/><label kind="guard" x="-544" y="-296">nb_messages_voles &lt; 1</label><label kind="synchronisation" x="-544" y="-312">MESSAGE[canal]?</label><label kind="assignment" x="-544" y="-280">nb_messages_voles := nb_messages_voles + 1</label><nail x="-432" y="-224"/><nail x="-432" y="-256"/><nail x="-560" y="-256"/><nail x="-560" y="-224"/></transition></template><system>// déclaration des réseaux, ce qui revient à déclarer le nombre de messages en parallèle
+int machine_destination;</declaration><location id="id8" x="-912" y="-280"></location><location id="id9" x="-1232" y="-280"><name x="-1288" y="-288">Debut</name></location><init ref="id9"/><transition><source ref="id8"/><target ref="id9"/><label kind="synchronisation" x="-1168" y="-200">MESSAGE[machine_destination]!</label><nail x="-912" y="-208"/><nail x="-1232" y="-208"/></transition><transition><source ref="id9"/><target ref="id8"/><label kind="synchronisation" x="-1168" y="-328">MESSAGE[canal]?</label><label kind="assignment" x="-1168" y="-312">machine_destination := destination</label></transition></template><template><name>Voleurs</name><parameter>const int canal</parameter><location id="id10" x="-496" y="-144"><name x="-512" y="-128">Voleur</name></location><init ref="id10"/><transition><source ref="id10"/><target ref="id10"/><label kind="guard" x="-544" y="-296">nb_messages_voles &lt; 1</label><label kind="synchronisation" x="-544" y="-312">MESSAGE[canal]?</label><label kind="assignment" x="-544" y="-280">nb_messages_voles := nb_messages_voles + 1</label><nail x="-432" y="-224"/><nail x="-432" y="-256"/><nail x="-560" y="-256"/><nail x="-560" y="-224"/></transition></template><system>// déclaration des réseaux, ce qui revient à déclarer le nombre de messages en parallèle
 Reseau1 = Reseaux(0);
 Reseau2 = Reseaux(0);
 Reseau3 = Reseaux(0);
